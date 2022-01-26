@@ -1,0 +1,72 @@
+---
+title: "Assignment 2"
+author: "Joe Martin"
+date: "1/26/2022"
+output: html_document
+---
+
+```{r}
+pacman::p_load(pacman,tidyverse,lubridate,tidymodels,modeltime, seasonal)
+
+h <- read_csv('~/HOUSTNSA.csv')
+h$month <- lubridate::month(h$DATE)
+
+h_sample <- h %>%
+  filter(DATE >= "1960-01-01" & DATE <= "2021-12-31")
+head(h_sample)
+```
+
+```{r}
+h_sample$spring <- ifelse((h_sample$month == 3|h_sample$month == 4|h_sample$month == 5),1,0)
+h_sample$summer <- ifelse((h_sample$month == 6|h_sample$month == 7|h_sample$month == 8),1,0)
+h_sample$fall <- ifelse((h_sample$month == 9|h_sample$month == 10|h_sample$month == 11),1,0)
+h_sample$winter <- ifelse((h_sample$month == 12|h_sample$month == 1|h_sample$month == 2),1,0)
+```
+
+```{r}
+# Appropriately regress the housing start series on these dummy variables, using the sample period from Jan 1960 - Dec 2021
+
+h_sample <- h_sample %>%
+  select(-month)
+
+fit1 <- lm(HOUSTNSA ~ ., h_sample) #winter comes in as NA. Because of exact colinearity?
+
+summary(fit1)
+
+fit1$coefficients
+```
+
+```{r}
+#Present the estimated coefficients from that regression, and plot a time series graph that includes the actual data superimposed on the (smoothed) seasonally adjusted series from the regression.
+
+houstnsa_co <- data.frame(fit1$coefficients) #Why is winter showing as NA? Exact colinearity?
+
+h_sample %>%
+  ggplot(aes(x=DATE,y=HOUSTNSA))+
+  geom_line()
+```
+
+```{r}
+cpia <- read_csv('~/MSBA/Spring 2022/ECON 6760/econ-6760/CPIAUCSL.csv')
+
+c <- cpia %>%
+  filter(DATE >= '1950-01-01' & DATE <= '2021-12-31')
+
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
