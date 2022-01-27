@@ -57,21 +57,56 @@ lines(y$trend, cex = , col = "red")
 ```
 
 ```{r}
-
+# This is for HOUSTNSA
+acf(new_ts, lag.max = 24)
 ```
 
 ```{r}
+cpia <- cpia %>%
+  filter(DATE >= '1950-01-01' & DATE <= '2021-12-31') %>%
+  select(-DATE)
+head(cpia)
 
+ts_cpia <- ts(tsc,start = c(1950,01), end = c(2021,12), frequency = 12)
+
+head(ts_cpia)
+head(new_ts)
+tsc <- ts_cpia[1:864]
+
+tsc
 ```
 
 ```{r}
+plot(diff(log(ts_cpia)))
 
+ac <- acf(ts_cpia, lag.max=12,  type = 'correlation', plot = FALSE)
+
+head(ac)
 ```
 
 ```{r}
-
+p_load(lmtest)
+model <- lm(FTSE~DAX, data = EuStockMarkets)
+lmtest::dwtest(model)
 ```
 
 ```{r}
+fit2 <- lm(HOUSTNSA ~ 0, data = h_sample)
+summary(fit2)
+summary(fit1)
+```
+
+Using the simple test for serial correlation discussed in class, test the null hypothesis
+that there is no autocorrelation in the inflation at the 12-month horizon. Report the test
+statistic and whether you can reject or not reject the null hypothesis for a test size of
+1%.
+
+```{r}
+twelve <- ts_cpia[853:864]
+
+twelve_ts <- ts(twelve, start = c(2021,01), end=c(2021,12), frequency = 12)
+
+p_load(EnvStats)
+serialCorrelationTest(twelve_ts)
 
 ```
