@@ -6,14 +6,17 @@ output: html_document
 ---
 
 ```{r}
-pacman::p_load(pacman,tidyverse,lubridate,tidymodels,modeltime, seasonal)
+pacman::p_load(pacman,tidyverse,lubridate)
 
-h <- read_csv('~/HOUSTNSA.csv')
+h <- read_csv('~/MSBA/Spring 2022/ECON 6760/econ-6760/data/HOUSTNSA.csv')
 h$month <- lubridate::month(h$DATE)
 
 h_sample <- h %>%
   filter(DATE >= "1960-01-01" & DATE <= "2021-12-31")
 head(h_sample)
+
+
+h2 <- h %>% select(-DATE,-month)
 ```
 
 ```{r}
@@ -24,7 +27,7 @@ h_sample$winter <- ifelse((h_sample$month == 12|h_sample$month == 1|h_sample$mon
 ```
 
 ```{r}
-# Appropriately regress the housing start series on these dummy variables, using the sample period from Jan 1960 - Dec 2021
+# Appropriately regress the housing start series on these dummy variables, using the sample period from Jan 1950 - Dec 2021
 
 h_sample <- h_sample %>%
   select(-month)
@@ -35,23 +38,25 @@ summary(fit1)
 
 fit1$coefficients
 ```
-
 ```{r}
-#Present the estimated coefficients from that regression, and plot a time series graph that includes the actual data superimposed on the (smoothed) seasonally adjusted series from the regression.
-
-houstnsa_co <- data.frame(fit1$coefficients) #Why is winter showing as NA? Exact colinearity?
-
-h_sample %>%
-  ggplot(aes(x=DATE,y=HOUSTNSA))+
-  geom_line()
+# Question 1 Estimated Coefficients
+ec <- data.frame(fit1$coefficients)
+ec
 ```
 
 ```{r}
-cpia <- read_csv('~/MSBA/Spring 2022/ECON 6760/econ-6760/CPIAUCSL.csv')
+# Question 1 Plot
 
-c <- cpia %>%
-  filter(DATE >= '1950-01-01' & DATE <= '2021-12-31')
+new_ts <- ts(h2, start = c(1960,1), end = c(2021,12), frequency = 12)
+y <- decompose(new_ts)
+```
 
+```{r}
+plot(y$x, col = "black")
+lines(y$trend, cex = , col = "red")
+```
+
+```{r}
 
 ```
 
